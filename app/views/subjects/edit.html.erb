@@ -1,0 +1,16 @@
+<% @page_title = "Edit Subject" %>
+
+<%= link_to("<< Back to List", subjects_path, :class => "back link") %>
+
+<div class="subjects edit">
+    <h2>Update Subject</h2>
+
+    <%= form_for(@subject) do |f| %>  <!-- form automatically knows this is a post request based on instance variable-->
+
+        <%= render(:partial => "form", :locals => {:f => f}) %>
+
+        <div class="form-buttons">
+            <%= f.submit("Update Subject") %>
+        </div>
+    <% end %>
+</div>
