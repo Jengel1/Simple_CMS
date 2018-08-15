@@ -16,6 +16,8 @@ class SectionsController < ApplicationController
     #HTTP GET, create new object to add values to GET/new_section_path
     def new
       @section = Section.new
+      @section_count = Section.count + 1
+      @pages = Page.sorted
     end
     #HTTP POST, adds new object to the database POST/sections_path
     def create
@@ -28,6 +30,8 @@ class SectionsController < ApplicationController
           redirect_to(sections_path)
       else
           # Else, redisplay form so user can fix problems
+          @section_count = Section.count + 1
+          @pages = Page.sorted
           render('new') # renders form template with original user data pre-populated
       end
     end
@@ -36,6 +40,8 @@ class SectionsController < ApplicationController
     #HTTP GET, display the form GET/edit_section_path(:id)
     def edit
       @section = Section.find(params[:id])
+      @section_count = Section.count
+      @pages = Page.sorted
     end
     #HTTP PATCH, process the form PATCH/section_path(:id)
     def update
@@ -48,6 +54,8 @@ class SectionsController < ApplicationController
           redirect_to(section_path(@section))
       else
           # Else, redisplay form so user can fix problems
+          @section_count = Section.count
+          @pages = Page.sorted
           render('edit') # renders form template with original pre-populated
       end
     end
@@ -70,7 +78,7 @@ class SectionsController < ApplicationController
 
     private
     def section_params
-      params.require(:section).permit(:page_id, :name, :position, :visible, :content_type, :content)
+      params.require(:section).permit(:page_id, :name, :position, :visible, :content_type, :content, :created_at)
     end
 
 end

@@ -16,6 +16,7 @@ class SubjectsController < ApplicationController
   #HTTP GET, create new object to add values to GET/new_subject_path
   def new
       @subject = Subject.new
+      @subject_count = Subject.count + 1
   end
   #HTTP POST, adds new object to the database POST/subjects_path
   def create
@@ -28,6 +29,7 @@ class SubjectsController < ApplicationController
           redirect_to(subjects_path)
       else
           # Else, redisplay form so user can fix problems
+          @subject_count = Subject.count + 1
           render('new') # renders form template with original user data pre-populated
       end
   end
@@ -36,6 +38,7 @@ class SubjectsController < ApplicationController
   #HTTP GET, display the form GET/edit_subject_path(:id)
   def edit
       @subject = Subject.find(params[:id])
+      @subject_count = Subject.count
   end
   #HTTP PATCH, process the form PATCH/subject_path(:id)
   def update
@@ -48,6 +51,7 @@ class SubjectsController < ApplicationController
           redirect_to(subject_path(@subject))
       else
           # Else, redisplay form so user can fix problems
+          @subject_count = Subject.count
           render('edit') # renders form template with original pre-populated
       end
   end
@@ -70,7 +74,7 @@ class SubjectsController < ApplicationController
 
   private
   def subject_params
-      params.require(:subject).permit(:name, :position, :visible)
+      params.require(:subject).permit(:name, :position, :visible, :created_at)
   end
 
 end
