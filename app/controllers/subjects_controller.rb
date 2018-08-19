@@ -2,9 +2,12 @@ class SubjectsController < ApplicationController
 
     layout "admin"
 
+    before_action :confirm_logged_in
+
     #read actions
     #HTTP GET, displays list of records  GET/subjects
   def index
+      logger.debug("*** Testing logger ***")
       @subjects = Subject.sorted
   end
   #HTTP GET, displays detailed view of single record GET/subjects:id

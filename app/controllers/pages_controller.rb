@@ -2,6 +2,10 @@ class PagesController < ApplicationController
 
     layout "admin"
 
+    before_action :confirm_logged_in
+    before_action :find_subjects, :only => [:new, :create, :edit, :update]
+    before_action :set_page_count, :only => [:new, :create, :edit, :update]
+
     #read actions
     #HTTP GET, displays list of records  GET/pages
     def index
@@ -16,8 +20,6 @@ class PagesController < ApplicationController
     #HTTP GET, create new object to add values to GET/new_page_path
     def new
         @page = Page.new
-        @page_count = Page.count + 1
-        @subjects = Subject.sorted
     end
     #HTTP POST, adds new object to the database POST/pages_path
     def create
@@ -30,8 +32,6 @@ class PagesController < ApplicationController
             redirect_to(pages_path)
         else
             # Else, redisplay form so user can fix problems
-            @page_count = Page.count + 1
-            @subjects = Subject.sorted
             render('new') # renders form template with original user data pre-populated
         end
     end
@@ -40,8 +40,6 @@ class PagesController < ApplicationController
     #HTTP GET, display the form GET/edit_page_path(:id)
     def edit
         @page = Page.find(params[:id])
-        @page_count = Page.count
-        @subjects = Subject.sorted
     end
     #HTTP PATCH, process the form PATCH/page_path(:id)
     def update
@@ -54,8 +52,6 @@ class PagesController < ApplicationController
         redirect_to(page_path(@page))
         else
         # Else, redisplay form so user can fix problems
-        @page_count = Page.count
-        @subjects = Subject.sorted
         render('edit') # renders form template with original pre-populated
         end
     end
@@ -79,5 +75,16 @@ class PagesController < ApplicationController
     private
     def page_params
         params.require(:page).permit(:subject_id, :name, :position, :visible, :permalink, :created_at)
+    end
+
+    def find_subjects
+        @subjects = Subject.sorted
+    end
+
+    def set_page_count
+        @page_count = Page.count
+        if params[:action] == 'new' || params[:action] == 'create'
+            @page_count += 1
+        end
     end
 end

@@ -2,6 +2,8 @@ class SectionsController < ApplicationController
 
     layout "admin"
 
+    before_action :confirm_logged_in
+
     #read actions
     #HTTP GET, displays list of records  GET/sections
     def index
