@@ -1,50 +1,43 @@
 class AccessController < ApplicationController
 
-    layout 'admin'
+  layout 'admin'
 
-    before_action :confirm_logged_in, :except => [:login, :attempt_login, :logout]
+  before_action :confirm_logged_in, :except => [:login, :attempt_login, :logout]
 
-    def menu
-        # display text and links
-        @username = session[:username]
+  def menu
+    # display text & links
+    @username = session[:username]
+  end
+
+  def login
+    # login form
+  end
+
+  def attempt_login
+    if params[:username].present? && params[:password].present?
+      found_user = AdminUser.where(:username => params[:username]).first
+      if found_user
+        authorized_user = found_user.authenticate(params[:password])
+      end
     end
 
-    def login
-        # login form
+    if authorized_user
+      session[:user_id] = authorized_user.id
+      session[:username] = authorized_user.username
+      flash[:notice] = "You are now logged in."
+      redirect_to(admin_path)
+    else
+      flash.now[:notice] = "Invalid username/password combination."
+      render('login')
     end
 
-    def attempt_login
-        if params[:username].present? && params[:password].present?  # .present? -- is not blank
-            found_user = AdminUser.where(:username => params[:username]).first  # .first eliminates array return value and just returns one record
-            if found_user
-                authorized_user = found_user.authenticate(params[:password])
-            end
-        end
+  end
 
-        if authorized_user
-            session[:user_id] = authorized_user.id  # set session id as authorized user id
-            session[:username] = authorized_user.username  # get username of authorized user
-            flash[:notice] = "You are now logged in."
-            redirect_to(admin_path)
-        else
-            flash.now[:notice] = "Invalid username/password combination."  # flash.now shows up on same page instead of next page
-            render('login')
-        end
-    end
+  def logout
+    session[:user_id] = nil
+    session[:username] = nil
+    flash[:notice] = 'Logged out'
+    redirect_to(access_login_path)
+  end
 
-    def logout
-        session[:user_id] = nil
-        session[:username] = nil
-        flash[:notice] = 'Logged out'
-        redirect_to(access_login_path)
-    end
-
-    private
-    def confirm_logged_in
-        unless session[:user_id]  # if no session id
-            flash[:notice] = "Please log in."
-            redirect_to(access_logout_path)
-            # redirect_to prevents requested action from running
-        end
-    end
 end
